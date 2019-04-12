@@ -27,4 +27,4 @@ if __name__=='__main__':
     evn = lmdb.open(embed.db_file)
     wfp = evn.begin()
     for key,value in wfp.cursor():
-        print key,face_comm.str_to_embed(value)
+        print (key,face_comm.str_to_embed(value))

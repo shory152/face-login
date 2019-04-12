@@ -25,7 +25,7 @@ class Encoder:
         start=time.time()
         with self.sess.as_default():
             facenet.load_model(facenet_model_checkpoint)
-        print 'Model loading finised,cost: %ds'%((time.time()-start))
+        print ('Model loading finised,cost: %ds'%((time.time()-start)))
 
     def generate_embedding(self, image):
         # Get input and output tensors
@@ -90,4 +90,4 @@ class Detection:
 if __name__=='__main__':
     pic='/Users/chenlinzhong/Downloads/noraml.png'
     encoder = Encoder()
-    print encoder.generate_embedding(pic)
+    print (encoder.generate_embedding(pic))

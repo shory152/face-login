@@ -1,11 +1,11 @@
 #coding=utf-8
 
-import  ConfigParser
+import  configparser
 import  demjson
 
 #读取配置文件
 def get_conf(key,value):
-    cf = ConfigParser.ConfigParser()
+    cf = configparser.ConfigParser()
     cf.read('config.ini')
     return cf.get(key,value)
 
@@ -28,7 +28,8 @@ def fmt_data(arrData):
 
 def trans_string(retData): 
     fp=open('json_tmp.txt','w')
-    print >> fp, retData
+    # print >> fp, retData
+    print(retData, file=fp)
     fp.close()
     return get_json_data()
 
@@ -41,4 +42,4 @@ def get_json_data():
     return str_len + line
 
 if __name__=='__main__':
-    print get_conf('annoy','index_path')
+    print (get_conf('annoy','index_path'))

@@ -4,6 +4,7 @@ from mtcnn.mtcnn_detector import MtcnnDetector
 import cv2
 import os
 import time
+import sys
 
 import  numpy as np
 import  face_comm
@@ -14,6 +15,10 @@ class Detect:
         self.detector = MtcnnDetector(model_folder=model, ctx=mx.cpu(0), num_worker=4, accurate_landmark=False)
     def detect_face(self,image):
         img = cv2.imread(image)
+        if img is not None:
+            print('detect face: read img ok,')
+        else:
+            print('detect face: read img fail')
         results =self.detector.detect_face(img)
         boxes=[]
         key_points = []
@@ -28,13 +33,18 @@ class Detect:
                     for i in range(5):
                         faceKeyPoint.append([p[i], p[i + 5]])
                 key_points.append(faceKeyPoint)
+        else:
+            print('detect face: result is None')
         return {"boxes":boxes,"face_key_point":key_points}
 
 
 if __name__=='__main__':
-    pic='/Users/chenlinzhong/Downloads/temp.jpeg'
+    if len(sys.argv) < 2:
+        print("give a photo file")
+        exit()
+    pic= sys.argv[1]
     detect = Detect()
     result = detect.detect_face(pic)
-    print result
+    print (result)
     exit(0)
 

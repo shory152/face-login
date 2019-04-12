@@ -13,6 +13,8 @@ annoy = face_annoy.face_annoy()
 #获得对齐人脸图片
 def get_align_pic(pic):
     result = detect.detect_face(pic)
+    print('get_align_pic: for ' + pic)
+    print('get_align_pic: result = ', result)
     if len(result['boxes']):
         align = face_alignment.Alignment()
         return  align.align_face(pic, result['face_key_point'])
@@ -29,6 +31,10 @@ def get_face_embed_vector(align_pic):
 def add_face_index(id,pic):
     align_face = get_align_pic(pic)
     if align_face is not None:
+        print('add_face_index: get_align_pic ok: ' + str(id) + ':' + align_face)
+        f = open('idface.txt','a')
+        f.write(str(id) + ':' + align_face + '\n')
+        f.close()
         #获取人脸特征
         face_vector = get_face_embed_vector(align_face)
         # 插入数据
@@ -39,6 +45,7 @@ def add_face_index(id,pic):
         annoy.reload()
         return True
     else:
+        print('add_face_index: get_align_pic fail')
         return False
 
 
@@ -47,6 +54,8 @@ def query_face(pic):
     if align_face is not None:
         #获取人脸特征
         face_vector = get_face_embed_vector(align_face)
+        #print("face vector for " + str(pic))
+        #print(face_vector)
         return annoy.query_vector(face_vector)
 
 def detect_face(pic):

@@ -4,6 +4,7 @@ import  face_detect
 import  cv2
 import  numpy as np
 import  os
+import  sys
 import  time
 import  random   
 
@@ -38,15 +39,20 @@ class Alignment:
         new_image= os.path.abspath(face_comm.get_conf('alignment','aligment_face_dir'))
         new_image= new_image+'/'+'%d_%d.png'%(time.time(),random.randint(0,100))
         if cv2.imwrite(new_image, img_new):
+            print("align_face: new image: " + new_image)
             return new_image
+        print("align_face: cv2.imwrite fail. " + new_image)
         return None
 
 if __name__=='__main__':
-    pic='/Users/chenlinzhong/Downloads/laji.png'
+    if len(sys.argv) < 2:
+        print("give a photo file")
+        exit()
+    pic= sys.argv[1]
     detect = face_detect.Detect()
     result = detect.detect_face(pic)
     if len(result['boxes']):
         align  = Alignment()
-        print 'align face: '+ align.align_face(pic,result['face_key_point'])
+        print ('align face: '+ align.align_face(pic,result['face_key_point']))
     else:
-        print 'not found face'
+        print ('not found face')

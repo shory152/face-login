@@ -9,9 +9,12 @@ def handle_request(data):
     arrData=demjson.decode(data)
     retData={'code':0}
 
+    print(arrData)
     #查找
     if arrData['cmd']=='search':
-        retData['data'] = face_handler.query_face(arrData['pic'])
+        sdata = face_handler.query_face(arrData['pic'])
+        print(sdata)
+        retData['data'] = list(sdata)
 
     #添加
     if arrData['cmd']=='add_index':    
@@ -35,7 +38,7 @@ sk.bind(ip_port)
 sk.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
 sk.listen(5)
 
-print 'server listening to '+host+':'+str(port)+'....'
+print ('server listening to '+host+':'+str(port)+'....')
 while True:
     try:
         conn,addr = sk.accept()
@@ -46,8 +49,9 @@ while True:
         #内容
         data=conn.recv(data_length)
         result=handle_request(data)
+        result=bytes(result, encoding="utf-8")
         conn.sendall(result)
         conn.close()
     except Exception as e:
-        print e
+        print (e)
 
