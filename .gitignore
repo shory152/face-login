@@ -12,6 +12,10 @@
 
 # DIR  
 vendor
+data
+models
+photo
+web/alignface
 
 # FILE
 composer.phar
