@@ -28,6 +28,7 @@ class face_annoy:
             annoy = AnnoyIndex(self.f)
             for key, value in wfp.cursor():
                 key = int(key)
+                value = str(value, encoding="utf-8")
                 value = face_comm.str_to_embed(value)
                 annoy.add_item(key,value)
 

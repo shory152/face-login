@@ -14,7 +14,10 @@ class face_lmdb:
         id = str(id)
         evn = lmdb.open(self.db_file);
         wfp = evn.begin(write=True)
-        wfp.put(key=id, value=face_comm.embed_to_str(vector))
+        vectorStr = face_comm.embed_to_str(vector)
+        id = bytes(id, encoding="utf-8")
+        vectorStr = bytes(vectorStr, encoding="utf-8")
+        wfp.put(key=id, value=vectorStr)
         wfp.commit()
         evn.close()    
 
