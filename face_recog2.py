@@ -85,35 +85,21 @@ id = rs['data'][0][0]
 id1 = rs['data'][0][1]
 
 fn=""
+if id > 999:
+    fn = "newface/" + str(id) + ".jpg"
+else:
+    fn="staffImage/B00" + str(id) + ".jpg"
+
 fn1=""
+if id1 > 999:
+    fn1 = "newface/" + str(id1) + ".jpg"
+else:
+    fn1="staffImage/B00" + str(id1) + ".jpg"
 
-f = open('idface.txt')
-x = 2
-
-for i in f:
-    if x <= 0:
-        break
-    
-    idfn = str.split(i,':')
-    if int(idfn[0]) == id:
-        x = x - 1
-        fn = idfn[1]
-        if (len(idfn)>2):
-            fn = fn + ":" + idfn[2]
-    
-    if int(idfn[0]) == id1:
-        x = x - 1
-        fn1 = idfn[1]
-        if (len(idfn)>2):
-            fn1 = fn1 + ":" + idfn[2]
-
-f.close()
 
 if fn == "":
     print("fn not found")
     exit()
-fn = fn.rstrip('\n')
-fn1 = fn1.rstrip('\n')
 
 print("given image:" + imgfn)
 print("found image:" + fn + "," + fn1)

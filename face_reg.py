@@ -3,9 +3,6 @@
 import socket
 import sys
 
-ip_port = ('127.0.0.1',9999)
-sk = socket.socket()
-sk.connect(ip_port)
 
 
 def test_add_face(id, photo):
@@ -19,6 +16,10 @@ if len(sys.argv) <= 2:
 	exit()
 
 print("args: ", sys.argv)
+
+ip_port = ('127.0.0.1',9999)
+sk = socket.socket()
+sk.connect(ip_port)
 
 send_str=test_add_face(sys.argv[1], sys.argv[2])
 print("send:", send_str)

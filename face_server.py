@@ -4,12 +4,16 @@ import socket
 import  demjson
 import  face_comm
 import  face_handler
+import face_detect
+import face_encoder
+import face_annoy
+from multiprocessing import freeze_support
+from face_comm import MyTrace
 
 def handle_request(data):
     arrData=demjson.decode(data)
     retData={'code':0}
 
-    print(arrData)
     #查找
     if arrData['cmd']=='search':
         sdata = face_handler.query_face(arrData['pic'])
@@ -18,6 +22,7 @@ def handle_request(data):
 
     #添加
     if arrData['cmd']=='add_index':    
+        MyTrace("add imge:", str(arrData['id'])+ "," + arrData['pic'])
         if face_handler.add_face_index(arrData['id'],arrData['pic']):
             retData['data']={'succ':1}
         else:
@@ -29,29 +34,43 @@ def handle_request(data):
     return face_comm.trans_string(retData)
 
 
-host='0.0.0.0'
-port=9999
-ip_port = (host,port)
+if __name__ == '__main__':
+	freeze_support()
+	detect = face_detect.Detect()
+	print("new detect object ok")
+	encoder = face_encoder.Encoder()
+	annoy = face_annoy.face_annoy()
+	face_handler.detect = detect
+	face_handler.encoder = encoder
+	face_handler.annoy = annoy
 
-sk = socket.socket()
-sk.bind(ip_port)
-sk.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
-sk.listen(5)
+	host='0.0.0.0'
+	port=9999
+	ip_port = (host,port)
 
-print ('server listening to '+host+':'+str(port)+'....')
-while True:
-    try:
-        conn,addr = sk.accept()
-        #数据长度
-        len = conn.recv(4)
-        data_length=int(len)
+	sk = socket.socket()
+	sk.bind(ip_port)
+	# sk.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
+	sk.listen(5)
 
-        #内容
-        data=conn.recv(data_length)
-        result=handle_request(data)
-        result=bytes(result, encoding="utf-8")
-        conn.sendall(result)
-        conn.close()
-    except Exception as e:
-        print (e)
+	print ('server listening to '+host+':'+str(port)+'....')
+	while True:
+		try:
+			MyTrace("accepting...")
+			conn,addr = sk.accept()
+			#数据长度
+			len = conn.recv(4)
+			data_length=int(len)
+
+			#内容
+			data=conn.recv(data_length)
+			MyTrace("recv:", data)
+			result=handle_request(data)
+			MyTrace("reply:", result)
+			result=bytes(result, encoding="utf-8")
+			conn.sendall(result)
+			conn.close()
+		except Exception as e:
+			conn.close()
+			print (e)
 

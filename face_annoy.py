@@ -1,6 +1,7 @@
 #coding=utf-8
 
 import  face_comm
+from face_comm import MyTrace
 from annoy import AnnoyIndex
 import  lmdb
 import  os
@@ -30,10 +31,17 @@ class face_annoy:
                 key = int(key)
                 value = str(value, encoding="utf-8")
                 value = face_comm.str_to_embed(value)
+                MyTrace("build annoy index:", str(key) + "," + str(len(value)))
+                MyTrace("build annoy index:", value)
                 annoy.add_item(key,value)
 
             annoy.build(self.num_trees)
+            MyTrace("build annoy index: build ok")
+            if os.path.exists(self.annoy_index_path):
+                self.annoy.unload()
+                os.remove(self.annoy_index_path)
             annoy.save(self.annoy_index_path)
+            MyTrace("build annoy index: save ok")
 
     #重新加载索引
     def reload(self):

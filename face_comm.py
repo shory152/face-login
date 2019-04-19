@@ -3,10 +3,15 @@
 import  configparser
 import  demjson
 
+fgTrace = True
+def MyTrace(msg, data=None):
+    if (fgTrace):
+	    print(msg, data)
+
 #读取配置文件
 def get_conf(key,value):
     cf = configparser.ConfigParser()
-    cf.read('config.ini')
+    cf.read('config.ini', encoding="utf-8")
     return cf.get(key,value)
 
 

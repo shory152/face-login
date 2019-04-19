@@ -1,14 +1,14 @@
 #coding=utf-8
 
-import face_detect
-
-import  face_annoy
+#import face_detect
+#import  face_annoy
 import  face_alignment
-import  face_encoder
+#import  face_encoder
 import  face_lmdb
-detect = face_detect.Detect()
-encoder = face_encoder.Encoder()
-annoy = face_annoy.face_annoy()
+#detect = face_detect.Detect()
+#encoder = face_encoder.Encoder()
+#annoy = face_annoy.face_annoy()
+from face_comm import MyTrace
 
 #获得对齐人脸图片
 def get_align_pic(pic):
@@ -37,12 +37,15 @@ def add_face_index(id,pic):
         f.close()
         #获取人脸特征
         face_vector = get_face_embed_vector(align_face)
+        MyTrace("got img vector:", len(face_vector))
         # 插入数据
         embed = face_lmdb.face_lmdb()
         embed.add_embed_to_lmdb(id,face_vector)
+        MyTrace("inserted into lmdb")
         #更新索引
         annoy.create_index_from_lmdb()
         annoy.reload()
+        MyTrace("updated annoy index")
         return True
     else:
         print('add_face_index: get_align_pic fail')
