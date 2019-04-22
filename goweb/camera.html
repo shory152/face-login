@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8">
+  <title>face recognize</title>
+
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script src="./js/ccv.js"></script>
+<script src="./js/cascade.js"></script>
+<script src="./js/jquery.facedetection.js"></script>
+
+<style>
+
+</style>
+
+</head>
+
+<body>
+  <div class="booth">
+    <video id="video" width="400" height="300" muted class="abs" ></video>
+    <canvas id="canvas" width="400" height="300"></canvas>
+	<br>
+	<img id="recogimg"/>
+	<span id="recogtxt"></span>
+  </div>
+
+  <script>
+      $(function () {
+           var canvas = document.getElementById('canvas');
+           var context = canvas.getContext('2d');
+           var video = document.getElementById('video');
+
+			if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+				// Not adding `{ audio: true }` since we only want video now
+				navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+					//video.src = window.URL.createObjectURL(stream);
+					video.srcObject = stream;
+					video.play();
+				});
+			}
+
+
+            is_stop=0;
+            video.ontimeupdate=function () {
+				//console.log("ontimeupdate: is_stop=" + is_stop);
+                if(is_stop) return;
+                context.drawImage(video, 0, 0, video.width, video.height);
+                var base64 = canvas.toDataURL('image/png');
+				console.log("image length = " + base64.length);
+                $('#canvas').faceDetection({
+                    complete: function (faces) {
+						//console.log("detect face:" + faces.length + " faces");
+                        if(faces.length>=1){
+                            is_stop = 1;
+							console.log("detect face:" + faces.length + " faces");
+                            draw_face_box(faces);
+                            //upload(base64)
+							//console.log(base64);
+
+                        } else {
+							console.log("detect face: no face");
+						}
+                        //console.log(faces)
+                    }
+                });
+            };
+
+            //画出人脸区域
+            function draw_face_box(faces) {
+				//console.log("drop face box:" + faces[0].width + "," + faces[0].height);
+                var rect;
+                var i;
+                //context.clearRect(0, 0, canvas.width, canvas.height);
+                for(i=0;i<faces.length;i++) {
+                    rect = faces[i];
+                    context.strokeStyle = '#a64ceb';
+                    if(rect.width<60) return;
+                    context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                    context.font = '11px Helvetica';
+                    context.fillStyle = "#fff";
+                    context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+                    context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+					console.log("drop face box: x=" + rect.x + ",y=" + rect.y + "w=" + rect.width + ",h=" + rect.height);
+                }
+				//console.log("drop face box: end");
+            }
+
+            //上传人脸图片
+            function upload(base64) {
+                $.ajax({
+                    "type":"POST",
+                    "url":"/search",
+                    "data":{'img':base64},
+                    'dataType':'json',
+                    beforeSend:function(){},
+                    success:function(result){
+                        console.log(result)
+                        //img_path = result.data.file_path
+						if (result.code == 0){
+							$('#recogimg').src = result.data.file_path;
+						} else {
+							$('#recogtxt').text = "抱歉，我不认识您~"
+						}
+                    }
+                });
+            }
+      })
+
+
+  </script>
+</body>
+</html>
